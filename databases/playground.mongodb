@@ -1,0 +1,124 @@
+// MongoDB Playground
+// To disable this template go to Settings | MongoDB | Use Default Template For Playground.
+// Make sure you are connected to enable completions and to be able to run a playground.
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+
+// Select the database to use.
+use('production');
+
+// The drop() command destroys all data from a collection.
+// Make sure you run it against the correct database and collection.
+db.Score.drop();
+
+// Insert a few documents into the sales collection.
+db.Score.insertMany([
+  { '_id': 2, 'userId': 'abc', 'score': 120, 'insertedAt': 1677954600000 },
+  { '_id': 1, 'userId': 'abc', 'score': 140, 'insertedAt': 1678041000000 },
+  { '_id': 7, 'userId': 'xyz', 'score': 200, 'insertedAt': 1678041000000 },
+  { '_id': 3, 'userId': 'xyz', 'score': 14, 'insertedAt': 1677436200000 },
+  { '_id': 4, 'userId': 'xyz', 'score': 15, 'insertedAt': 1677522600000 },
+  { '_id': 5, 'userId': 'abc', 'score': 160, 'insertedAt': 1676313000000 },
+  { '_id': 6, 'userId': 'xyz', 'score': 14.5, 'insertedAt': 1676140200000 },
+]);
+
+// Run a find command to view items sold on April 4th, 2014.
+// db.Score.find({});
+
+// Build an aggregation to view total sales for each product in 2014.
+const aggregation = [
+  {
+   $addFields: {
+      regDate: { $toDate: "$insertedAt" }
+    }
+  },
+  {
+    $project: {
+      score: 1,
+      userId: 1,
+      week: { $week: ["$regDate"] },
+      dayOfWeek: { $dayOfWeek: ["$regDate"] }
+    }
+  },
+  {
+    $group: {
+      "_id": {
+        "userId": "$userId",
+        "week": "$week"
+      },
+      totalScore: {
+        $sum: "$score"
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      userId: "$_id.userId",
+      week: "$_id.week",
+      totalScore: "$totalScore"
+    }
+  },
+  {
+    $setWindowFields: {
+      partitionBy: "$week",
+      sortBy: { totalScore: -1 },
+      output: {
+        rankScore: {
+          $rank: {}
+        }
+      }
+    }
+  },
+  {
+    $match: {
+      "userId": "abc"
+    }
+  }
+];
+
+const aggregateForTotalRank = [
+  {
+    $addFields: {
+      regDate: { $toDate: "$insertedAt" }
+    }
+  },
+  {
+    $group: {
+      "_id": {
+        userId: "$userId",
+      },
+      totalScore: {
+        $sum: "$score"
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      userId: "$_id.userId",
+      totalScore: "$totalScore"
+    }
+  },
+  {
+    $setWindowFields: {
+      // partitionBy: "$userId",
+      sortBy: { totalScore: -1 },
+      output: {
+        rankScore: {
+          $rank: {}
+        }
+      }
+    }
+  },
+  {
+    $match: {
+      "userId": "abc"
+    }
+  }
+]
+
+// Run the aggregation and open a cursor to the results.
+// Use toArray() to exhaust the cursor to return the whole result set.
+// You can use hasNext()/next() to iterate through the cursor page by page.
+// db.Score.aggregate(aggregation);
+db.Score.aggregate(aggregateForTotalRank);

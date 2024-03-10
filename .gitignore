@@ -1,0 +1,7 @@
+node_modules
+package-lock.json
+.env
+upload/*
+
+# exception to the rule
+!upload/.gitkeep 
