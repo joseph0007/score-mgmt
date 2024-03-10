@@ -293,17 +293,3 @@ exports.handleWeeklyAggregate = async (request, response) => {
     }
   });
 }
-
-// reject({
-//   statusCode: 400,
-//   status: false,
-//   message: `File not found`,
-//   error: ''
-// });
-
-// resolve({
-//   statusCode: 200,
-//   status: true,
-//   message: `File deletion successful`,
-//   error: err
-// });
