@@ -95,7 +95,7 @@ function mongoRemove(collection, filter) {
 
       const result = await global.mongoDatabasePool
         .collection(collection)
-        .deleteOne(filter);
+        .deleteMany(filter);
 
       resolve(result);
     } catch (error) {
