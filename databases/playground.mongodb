@@ -19,6 +19,8 @@ db.Score.insertMany([
   { '_id': 4, 'userId': 'xyz', 'score': 15, 'insertedAt': 1677522600000 },
   { '_id': 5, 'userId': 'abc', 'score': 160, 'insertedAt': 1676313000000 },
   { '_id': 6, 'userId': 'xyz', 'score': 14.5, 'insertedAt': 1676140200000 },
+  { '_id': 8, 'userId': 'xyz', 'score': 10.7, 'insertedAt': 1704372161000 },
+  { '_id': 9, 'userId': 'xyz', 'score': 10.1, 'insertedAt': 1704458561000 },
 ]);
 
 // Run a find command to view items sold on April 4th, 2014.
@@ -35,7 +37,7 @@ const aggregation = [
     $project: {
       score: 1,
       userId: 1,
-      week: { $week: ["$regDate"] },
+      week: { $week: { $subtract: ["$regDate", 86400000 * 4] } },
       dayOfWeek: { $dayOfWeek: ["$regDate"] }
     }
   },
@@ -69,11 +71,11 @@ const aggregation = [
       }
     }
   },
-  {
-    $match: {
-      "userId": "abc"
-    }
-  }
+  // {
+  //   $match: {
+  //     "userId": "abc"
+  //   }
+  // }
 ];
 
 const aggregateForTotalRank = [
@@ -115,10 +117,10 @@ const aggregateForTotalRank = [
       "userId": "abc"
     }
   }
-]
+];
 
 // Run the aggregation and open a cursor to the results.
 // Use toArray() to exhaust the cursor to return the whole result set.
 // You can use hasNext()/next() to iterate through the cursor page by page.
-// db.Score.aggregate(aggregation);
-db.Score.aggregate(aggregateForTotalRank);
+db.Score.aggregate(aggregation);
+// db.Score.aggregate(aggregateForTotalRank);

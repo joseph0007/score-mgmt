@@ -40,8 +40,22 @@ async function decrypt(encryptdata) {
   }
 }
 
+function getParsedData(json) {
+  if( typeof json !== 'string' ) return json;
+
+  let returnObj = {};
+  try {
+    returnObj = JSON.parse(json);
+  } catch (error) {
+    returnObj = {};
+  }
+
+  return returnObj;
+}
+
 module.exports = {
   sendResponse,
   encrypt,
-  decrypt
+  decrypt,
+  getParsedData
 }

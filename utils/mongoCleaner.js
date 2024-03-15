@@ -1,3 +1,5 @@
+// without redis implementation
+
 const { CronJob } = require('cron');
 const mongoCollections = require('../utils/mongoCollectionConstants');
 const { mongoRemove } = require('../databases/mongo');

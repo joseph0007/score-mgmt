@@ -1,6 +1,6 @@
 const moment = require("moment");
 const { mongoUpdate, mongoFind } = require("../databases/mongo");
-const { encrypt } = require("../utils/helpers");
+const { encrypt, getParsedData } = require("../utils/helpers");
 const mongoCollections = require("../utils/mongoCollectionConstants");
 
 const {
@@ -45,7 +45,10 @@ exports.generateOtp = async (request, response) => {
       verified: false
     };
   
-    await mongoUpdate(mongoCollections.User, { mobileNumber }, updateData, { upsert: true });
+    // await mongoUpdate(mongoCollections.User, { mobileNumber }, updateData, { upsert: true });
+    await global.redis.set(mobileNumber, JSON.stringify(updateData), {
+      EX: OTP_EXPIRY * 60,
+    });
 
     resolve({
       statusCode: 200,
@@ -82,19 +85,9 @@ exports.registerUser = async (request, response) => {
       otp,
     } = request.body;
 
-    const user = await mongoFind(mongoCollections.User, { mobileNumber });
-    
-    if( !user || !Array.isArray(user) || !user[0] ) {
-      reject({
-        statusCode: 400,
-        status: false,
-        message: `Otp not generated. Please generate otp.`,
-        error: ''
-      });
-      return;
-    }
+    const userExist = await mongoFind(mongoCollections.User, { mobileNumber });
 
-    if( user[0].verified ) {
+    if( Array.isArray(userExist) && userExist[0] && userExist[0].verified ) {
       reject({
         statusCode: 400,
         status: false,
@@ -104,7 +97,20 @@ exports.registerUser = async (request, response) => {
       return;
     }
 
-    if( !user[0].otp ) {
+    const userJson = await global.redis.get(mobileNumber);
+    const user = getParsedData(userJson);
+
+    if( typeof user !== 'object' && !user.otp ) {
+      reject({
+        statusCode: 400,
+        status: false,
+        message: `Otp not generated. Please generate otp.`,
+        error: ''
+      });
+      return;
+    }
+
+    if( !user.otp ) {
       reject({
         statusCode: 400,
         status: false,
@@ -117,7 +123,7 @@ exports.registerUser = async (request, response) => {
     const {
       otp: otpUser,
       otpGeneratedTime
-    } = user[0];
+    } = user;
 
     if( otpUser !== otp || parseInt(moment().format("x"), 10) > otpGeneratedTime ) {
       reject({
@@ -142,14 +148,13 @@ exports.registerUser = async (request, response) => {
       dob,
       emailId,
       mobileNumber,
-      otp: 0,
-      otpGeneratedTime: 0,
       verified: true,
       status: 1,
       insertAt: parseInt(moment().format("x"), 10)
     }
 
     await mongoUpdate(mongoCollections.User, { mobileNumber }, updateData, { upsert: true });
+    await global.redis.del(mobileNumber);
 
     resolve({
       statusCode: 200,
