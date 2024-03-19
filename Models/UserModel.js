@@ -228,7 +228,7 @@ exports.handleWeeklyAggregate = async (request, response) => {
           $project: {
             score: 1,
             userId: 1,
-            week: { $week: { $subtract: ["$regDate", 86400000 * 4] } },
+            week: { $week: { $subtract: ["$regDate", 86400000 * 5] } },
             dayOfWeek: { $dayOfWeek: ["$regDate"] }
           }
         },

@@ -19,8 +19,9 @@ db.Score.insertMany([
   { '_id': 4, 'userId': 'xyz', 'score': 15, 'insertedAt': 1677522600000 },
   { '_id': 5, 'userId': 'abc', 'score': 160, 'insertedAt': 1676313000000 },
   { '_id': 6, 'userId': 'xyz', 'score': 14.5, 'insertedAt': 1676140200000 },
-  { '_id': 8, 'userId': 'xyz', 'score': 10.7, 'insertedAt': 1704372161000 },
-  { '_id': 9, 'userId': 'xyz', 'score': 10.1, 'insertedAt': 1704458561000 },
+  { '_id': 8, 'userId': 'hhh', 'score': 10.7, 'insertedAt': 1705017600000 }, // 2024-01-12 Frid
+  { '_id': 9, 'userId': 'yyy', 'score': 10.1, 'insertedAt': 1704931200000 }, // 2024-01-11 Thurs
+  { '_id': 10, 'userId': 'zzz', 'score': 10.1, 'insertedAt': 1704844800000 }, // 2024-01-10 Wed
 ]);
 
 // Run a find command to view items sold on April 4th, 2014.
@@ -37,7 +38,7 @@ const aggregation = [
     $project: {
       score: 1,
       userId: 1,
-      week: { $week: { $subtract: ["$regDate", 86400000 * 4] } },
+      week: { $week: { $subtract: ["$regDate", 86400000 * 5] } },
       dayOfWeek: { $dayOfWeek: ["$regDate"] }
     }
   },

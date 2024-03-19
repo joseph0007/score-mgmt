@@ -100,7 +100,7 @@ exports.registerUser = async (request, response) => {
     const userJson = await global.redis.get(mobileNumber);
     const user = getParsedData(userJson);
 
-    if( typeof user !== 'object' && !user.otp ) {
+    if( !user || typeof user !== 'object' && !user.otp ) {
       reject({
         statusCode: 400,
         status: false,
