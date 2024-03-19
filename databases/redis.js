@@ -4,7 +4,7 @@ const {
     REDIS_CONNECT_URL = "redis://localhost:6379"
 } = process.env;
 
-( async () => {
+(async () => {
     global.redis = await createClient({
         url: REDIS_CONNECT_URL
     })
