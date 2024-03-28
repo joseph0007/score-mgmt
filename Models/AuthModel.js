@@ -1,14 +1,22 @@
 const moment = require("moment");
-const { mongoUpdate, mongoFind } = require("../databases/mongo");
+const { mongoUpdate, mongoFind, connectMongoDb, disconnectMongoDb } = require("../databases/mongo");
+const { connectRedis, disconnectRedis } = require("../databases/redis");
 const { encrypt, getParsedData } = require("../utils/helpers");
 const mongoCollections = require("../utils/mongoCollectionConstants");
 
 const {
-  OTP_EXPIRY = 1
+  OTP_EXPIRY = 1,
+  IS_AWS_LAMBDA = false
 } = process.env;
 
 exports.generateOtp = async (request, response) => {
   return new Promise(async ( resolve, reject ) => {
+
+    if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+      await connectMongoDb();
+      await connectRedis();
+    }
+
     if( typeof request.body !== 'object' || !request.body.mobileNumber ) {
       reject({
         statusCode: 400,
@@ -50,6 +58,11 @@ exports.generateOtp = async (request, response) => {
       EX: OTP_EXPIRY * 60,
     });
 
+    if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+      await disconnectMongoDb();
+      await disconnectRedis();
+    }
+
     resolve({
       statusCode: 200,
       status: true,
@@ -60,6 +73,11 @@ exports.generateOtp = async (request, response) => {
 
 exports.registerUser = async (request, response) => {
   return new Promise(async ( resolve, reject ) => {
+    if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+      await connectMongoDb();
+      await connectRedis();
+    }
+
     if( 
       typeof request.body !== 'object' || 
       !request.body.mobileNumber || 
@@ -155,6 +173,11 @@ exports.registerUser = async (request, response) => {
 
     await mongoUpdate(mongoCollections.User, { mobileNumber }, updateData, { upsert: true });
     await global.redis.del(mobileNumber);
+
+    if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+      await disconnectMongoDb();
+      await disconnectRedis();
+    }
 
     resolve({
       statusCode: 200,

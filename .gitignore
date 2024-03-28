@@ -1,7 +1,11 @@
 node_modules
+jspm_packages
 package-lock.json
 .env
 upload/*
 
 # exception to the rule
 !upload/.gitkeep 
+
+# Serverless directories
+.serverless

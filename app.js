@@ -5,10 +5,18 @@ const authRouter = require('./routes/authRoutes');
 const AppError = require('./utils/appError');
 const appErrorHandler = require('./controllers/errorController');
 const { rateLimit } = require('express-rate-limit');
-require('./databases/redis');
 // require('./utils/mongoCleaner');
 
+const {
+  IS_AWS_LAMBDA = false
+} = process.env;
+
+if( !IS_AWS_LAMBDA || IS_AWS_LAMBDA === "false" ) {
+  require('./databases/redis');
+}
+
 const app = express();
+// app.enable('trust proxy');
 
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, 

@@ -2,7 +2,8 @@ const { MongoClient } = require('mongodb');
 
 const {
   MONGO_URI,
-  MONGO_DB
+  MONGO_DB,
+  IS_AWS_LAMBDA = false
 } = process.env;
 
 global.mongoDatabasePool = undefined;
@@ -14,17 +15,49 @@ if( !MONGO_URI || !MONGO_DB ) {
 
 const client = new MongoClient(MONGO_URI);
 
-(async function () {
+if( !IS_AWS_LAMBDA || IS_AWS_LAMBDA === "false" ) {
+  (async function () {
+    try {
+      await client.connect();
+    
+      console.log(`MONGO_CONNECT_SUCCESSFULL`);
+      global.mongoDatabasePool = client.db(MONGO_DB); 
+    } catch (error) {
+      console.log(`MONGO_CONNECT_FAILED: MONGO URI -> ${MONGO_URI}`);
+      process.exit(1);
+    }
+  })();
+}
+
+async function connectMongoDb() {
   try {
     await client.connect();
-  
     console.log(`MONGO_CONNECT_SUCCESSFULL`);
     global.mongoDatabasePool = client.db(MONGO_DB); 
+    return true;
   } catch (error) {
     console.log(`MONGO_CONNECT_FAILED: MONGO URI -> ${MONGO_URI}`);
-    process.exit(1);
+    return false;
   }
-})();
+}
+
+async function disconnectMongoDb( retryCount = 0 ) {
+  try {
+    await client.close();
+    console.log(`MONGO_DISCONNECT_SUCCESSFULL`);
+    global.mongoDatabasePool = undefined; 
+    return true;
+  } catch (error) {
+    console.log(`MONGO_DISCONNECT_FAILED: MONGO URI -> ${MONGO_URI}`);
+
+    if( retryCount < 2 ) {
+      retryCount += 1;
+      return disconnectMongoDb(retryCount);
+    }
+
+    return false;
+  }
+}
 
 function mongoFind(collection, querySelector, queryProjection = {}, sortSelector = {}, skip = 0, limit = 50) {
   return new Promise(async function (resolve, reject) {
@@ -145,5 +178,7 @@ module.exports = {
   "mongoUpdate": mongoUpdate,
   "mongoRemove": mongoRemove,
   "mongoInsertOne": mongoInsertOne,
-  "mongoAggregate": mongoAggregate
+  "mongoAggregate": mongoAggregate,
+  "connectMongoDb": connectMongoDb,
+  "disconnectMongoDb": disconnectMongoDb
 }

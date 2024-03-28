@@ -1,3 +1,10 @@
+const { disconnectMongoDb } = require("../databases/mongo");
+const { disconnectRedis } = require("../databases/redis");
+
+const {
+  IS_AWS_LAMBDA = false
+} = process.env;
+
 const sendErrorDev = (err, req, res, isDev) => {
 
   if( isDev ) {
@@ -17,6 +24,11 @@ const sendErrorDev = (err, req, res, isDev) => {
 
 module.exports = (err, req, res, next) => {
   console.log("err ", err);
+
+  if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+    disconnectMongoDb();
+    disconnectRedis();
+  }
 
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'fail';

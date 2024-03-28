@@ -1,10 +1,21 @@
 const moment = require('moment');
-const { mongoFind, mongoInsertOne, mongoAggregate } = require('../databases/mongo');
+const { mongoInsertOne, mongoFind, mongoAggregate, connectMongoDb, disconnectMongoDb } = require("../databases/mongo");
+const { connectRedis, disconnectRedis } = require("../databases/redis");
 const { decrypt } = require('../utils/helpers');
 const mongoCollections = require('../utils/mongoCollectionConstants');
 
+const {
+  IS_AWS_LAMBDA = false
+} = process.env;
+
 exports.handleUpdateScore = async (request, response) => {
   return new Promise(async (resolve, reject) => {
+
+    if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+      await connectMongoDb();
+      await connectRedis();
+    }
+
     try {
       if (
         typeof request.body !== 'object' ||
@@ -74,6 +85,11 @@ exports.handleUpdateScore = async (request, response) => {
       }
       await mongoInsertOne(mongoCollections.Score, insertData);
 
+      if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+        await disconnectMongoDb();
+        await disconnectRedis();
+      }
+
       resolve({
         statusCode: 200,
         status: true,
@@ -94,6 +110,12 @@ exports.handleUpdateScore = async (request, response) => {
 
 exports.handleTotalScoreRank = async (request, response) => {
   return new Promise(async (resolve, reject) => {
+
+    if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+      await connectMongoDb();
+      await connectRedis();
+    }
+
     try {
       if (
         typeof request.body !== 'object' ||
@@ -167,6 +189,11 @@ exports.handleTotalScoreRank = async (request, response) => {
 
       const aggregateData = await mongoAggregate(mongoCollections.Score, aggregatePipeline);
 
+      if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+        await disconnectMongoDb();
+        await disconnectRedis();
+      }
+
       resolve({
         statusCode: 200,
         status: true,
@@ -187,6 +214,12 @@ exports.handleTotalScoreRank = async (request, response) => {
 
 exports.handleWeeklyAggregate = async (request, response) => {
   return new Promise(async (resolve, reject) => {
+
+    if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+      await connectMongoDb();
+      await connectRedis();
+    }
+
     try {
       if (
         typeof request.body !== 'object' ||
@@ -275,6 +308,11 @@ exports.handleWeeklyAggregate = async (request, response) => {
       ];
 
       const aggregateData = await mongoAggregate(mongoCollections.Score, aggregatePipeline);
+
+      if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
+        await disconnectMongoDb();
+        await disconnectRedis();
+      }
 
       resolve({
         statusCode: 200,
