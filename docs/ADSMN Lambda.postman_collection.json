@@ -1,0 +1,195 @@
+{
+	"info": {
+		"_postman_id": "ebf36764-27a1-4b23-a8df-dd1895b79ff0",
+		"name": "ADSMN Lambda",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12548113"
+	},
+	"item": [
+		{
+			"name": "https://0g24beyhu6.execute-api.us-east-1.amazonaws.com/dev/api/v1/auth/generate-otp",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDg4NzUxMDYsImV4cCI6MTcxMTQ2NzEwNn0.RxT-ILcci6zfRzeLEOLBGgnGr_nsUti00TOi3RJRo4s",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mobileNumber\": \"8600098770\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://0g24beyhu6.execute-api.us-east-1.amazonaws.com/dev/api/v1/auth/generate-otp",
+					"protocol": "https",
+					"host": [
+						"0g24beyhu6",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"api",
+						"v1",
+						"auth",
+						"generate-otp"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://0g24beyhu6.execute-api.us-east-1.amazonaws.com/dev/api/v1/auth/register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"mobileNumber\": \"8600098770\",\n    \"name\": \"joseph\",\n    \"dob\": \"08-05-1996\",\n    \"emailId\": \"joe@gmail.com\",\n    \"otp\": 1234\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://0g24beyhu6.execute-api.us-east-1.amazonaws.com/dev/api/v1/auth/register",
+					"protocol": "https",
+					"host": [
+						"0g24beyhu6",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"api",
+						"v1",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://0g24beyhu6.execute-api.us-east-1.amazonaws.com/dev/api/v1/user/score",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"+Xy1lKTJlATlYUyRvCdYfw==\",\n    \"score\": 89\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://0g24beyhu6.execute-api.us-east-1.amazonaws.com/dev/api/v1/user/score",
+					"protocol": "https",
+					"host": [
+						"0g24beyhu6",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"api",
+						"v1",
+						"user",
+						"score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://0g24beyhu6.execute-api.us-east-1.amazonaws.com/dev/api/v1/user/total-score",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"+Xy1lKTJlATlYUyRvCdYfw==\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://0g24beyhu6.execute-api.us-east-1.amazonaws.com/dev/api/v1/user/total-score",
+					"protocol": "https",
+					"host": [
+						"0g24beyhu6",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"api",
+						"v1",
+						"user",
+						"total-score"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://0g24beyhu6.execute-api.us-east-1.amazonaws.com/dev/api/v1/user/weekly-score",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": \"+Xy1lKTJlATlYUyRvCdYfw==\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://0g24beyhu6.execute-api.us-east-1.amazonaws.com/dev/api/v1/user/weekly-score",
+					"protocol": "https",
+					"host": [
+						"0g24beyhu6",
+						"execute-api",
+						"us-east-1",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"dev",
+						"api",
+						"v1",
+						"user",
+						"weekly-score"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
