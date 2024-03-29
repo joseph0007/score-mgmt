@@ -44,6 +44,8 @@ async function connectRedis() {
 async function disconnectRedis(retryCount = 0) {
     return new Promise(async (resolve, reject) => {
         try {
+            if( !global.redis ) return resolve(true);
+
             global.redis.disconnect();
             global.redis = undefined;
 

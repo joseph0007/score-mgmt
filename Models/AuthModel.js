@@ -1,7 +1,7 @@
 const moment = require("moment");
 const { mongoUpdate, mongoFind, connectMongoDb, disconnectMongoDb } = require("../databases/mongo");
 const { connectRedis, disconnectRedis } = require("../databases/redis");
-const { encrypt, getParsedData } = require("../utils/helpers");
+const { encrypt, getParsedData, checkDBConnections } = require("../utils/helpers");
 const mongoCollections = require("../utils/mongoCollectionConstants");
 
 const {
@@ -15,6 +15,16 @@ exports.generateOtp = async (request, response) => {
     if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
       await connectMongoDb();
       await connectRedis();
+    }
+
+    if( !checkDBConnections() ) {
+      reject({
+        statusCode: 500,
+        status: false,
+        message: `Database connections not established.`,
+        error: ''
+      });
+      return;
     }
 
     if( typeof request.body !== 'object' || !request.body.mobileNumber ) {
@@ -76,6 +86,16 @@ exports.registerUser = async (request, response) => {
     if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
       await connectMongoDb();
       await connectRedis();
+    }
+
+    if( !checkDBConnections() ) {
+      reject({
+        statusCode: 500,
+        status: false,
+        message: `Database connections not established.`,
+        error: ''
+      });
+      return;
     }
 
     if( 

@@ -1,7 +1,7 @@
 const moment = require('moment');
 const { mongoInsertOne, mongoFind, mongoAggregate, connectMongoDb, disconnectMongoDb } = require("../databases/mongo");
 const { connectRedis, disconnectRedis } = require("../databases/redis");
-const { decrypt } = require('../utils/helpers');
+const { decrypt, checkDBConnections } = require('../utils/helpers');
 const mongoCollections = require('../utils/mongoCollectionConstants');
 
 const {
@@ -14,6 +14,16 @@ exports.handleUpdateScore = async (request, response) => {
     if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
       await connectMongoDb();
       await connectRedis();
+    }
+
+    if( !checkDBConnections() ) {
+      reject({
+        statusCode: 500,
+        status: false,
+        message: `Database connections not established.`,
+        error: ''
+      });
+      return;
     }
 
     try {
@@ -114,6 +124,16 @@ exports.handleTotalScoreRank = async (request, response) => {
     if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
       await connectMongoDb();
       await connectRedis();
+    }
+
+    if( !checkDBConnections() ) {
+      reject({
+        statusCode: 500,
+        status: false,
+        message: `Database connections not established.`,
+        error: ''
+      });
+      return;
     }
 
     try {
@@ -218,6 +238,16 @@ exports.handleWeeklyAggregate = async (request, response) => {
     if( IS_AWS_LAMBDA === "true" || IS_AWS_LAMBDA === true ) {
       await connectMongoDb();
       await connectRedis();
+    }
+
+    if( !checkDBConnections() ) {
+      reject({
+        statusCode: 500,
+        status: false,
+        message: `Database connections not established.`,
+        error: ''
+      });
+      return;
     }
 
     try {

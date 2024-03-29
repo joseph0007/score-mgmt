@@ -1,4 +1,7 @@
 const crypto = require("node:crypto");
+const { disconnectMongoDb } = require("../databases/mongo");
+const { disconnectRedis } = require("../databases/redis");
+
 const {
   ENCRYPT_KEY: cryptkey,
   ENCRYPT_IV: iv
@@ -53,9 +56,43 @@ function getParsedData(json) {
   return returnObj;
 }
 
+function checkDBConnections() {
+  let isMongoConnected = false;
+  let isRedisConnected = false;
+
+  if( global.mongoDatabasePool ) {
+    isMongoConnected = true;
+  }
+
+  if( global.redis ) {
+    isRedisConnected = true;
+  }
+
+  switch(true) {
+    case isMongoConnected && !isRedisConnected: {
+      disconnectMongoDb();
+      return false;
+    }
+    case !isMongoConnected && isRedisConnected: {
+      disconnectRedis();
+      return false;
+    }
+    case !isMongoConnected && !isRedisConnected: {
+      return false;
+    }
+    case isMongoConnected && isRedisConnected: {
+      return true;
+    }
+    default: {
+      return false;
+    }
+  }
+}
+
 module.exports = {
   sendResponse,
   encrypt,
   decrypt,
-  getParsedData
+  getParsedData,
+  checkDBConnections
 }

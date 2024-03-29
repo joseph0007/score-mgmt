@@ -43,6 +43,8 @@ async function connectMongoDb() {
 
 async function disconnectMongoDb( retryCount = 0 ) {
   try {
+    if( !global.mongoDatabasePool ) return true;
+
     await client.close();
     console.log(`MONGO_DISCONNECT_SUCCESSFULL`);
     global.mongoDatabasePool = undefined; 
